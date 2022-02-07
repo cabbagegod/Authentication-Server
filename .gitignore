@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# PlayFab assets should be imported by user
+/Assets/PlayFabSDK/*
+/Assets/PlayFabEditorExtensions/*
