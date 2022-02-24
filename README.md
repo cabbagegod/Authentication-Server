@@ -6,6 +6,9 @@ This is an http authentication server that I'm playing around with for my upcomi
 
 *Please note, I have no idea what I'm doing. This is an experimental idea that I'm using to learn. I would not recommend using it in production but it can be a stepping stool to help other people learn who are trying to learn this kind of thing, too. Also note that a production version should run on HTTPS, not HTTP.* 
 
+![Authentication Server Flow](https://user-images.githubusercontent.com/62683395/155448245-1dae2e73-4038-4b24-8619-719d2da0c380.png)
+
+
 ## To Do
 There is still a lot I want to do with this project. Currently it works but it wouldn't be very helpful in an actual environment. Here are some things I want to add,
 * Temp auth tokens so the user's playfab session token is never shared with an untrusted (player run) server
