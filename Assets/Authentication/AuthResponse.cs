@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AuthResponse
-{
+public class AuthResponse {
     public bool isFinished = false;
     public bool isAuthentic = false;
 
