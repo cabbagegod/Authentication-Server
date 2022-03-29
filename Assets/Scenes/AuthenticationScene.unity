@@ -176,6 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1201552830}
   - component: {fileID: 1201552831}
+  - component: {fileID: 1201552829}
   m_Layer: 0
   m_Name: Auth
   m_TagString: Untagged
@@ -183,6 +184,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1201552829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201552828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d35980706b3fc0f409c8b7d0705fbeb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1201552830
 Transform:
   m_ObjectHideFlags: 0
@@ -209,6 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6407bb030c556c54092a48bcd172085d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  authenticationHandler: {fileID: 1201552829}
 --- !u!1 &2024760190
 GameObject:
   m_ObjectHideFlags: 0

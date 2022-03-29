@@ -18,9 +18,9 @@ public class HttpRequestTest : MonoBehaviour {
     }
 
     IEnumerator Upload(string uri) {
-        string sessionTicket = PlayFabLoginTest.sessionTicket;
+        string clientRequestSerialized = JsonUtility.ToJson(new ClientRequest(PlayFabLoginTest.sessionTicket, "1.1"));
 
-        using(UnityWebRequest www = UnityWebRequest.Post(uri, sessionTicket)) {
+        using(UnityWebRequest www = UnityWebRequest.Post(uri, clientRequestSerialized)) {
             yield return www.SendWebRequest();
 
             if(www.result != UnityWebRequest.Result.Success) {

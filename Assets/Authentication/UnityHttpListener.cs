@@ -12,8 +12,8 @@ public class UnityHttpListener : MonoBehaviour {
 	[SerializeField]
 	private HttpListener listener;
 	private Thread listenerThread;
-
-	Dictionary<AuthRequest, AuthResponse> authenticationQueue = new Dictionary<AuthRequest, AuthResponse>();
+	[SerializeField]
+	private AuthenticationHandler authenticationHandler;
 
 	void Start() {
 		listener = new HttpListener();
@@ -25,15 +25,6 @@ public class UnityHttpListener : MonoBehaviour {
 		listenerThread = new Thread(ListenerThread);
 		listenerThread.Start();
 		Debug.Log("Server Started on " + "http://127.0.0.1:4444/");
-	}
-
-	//Runs on main thread, runs the requested calls to PlayFab
-	void Update() {
-		foreach(AuthRequest authRequest in authenticationQueue.Keys) {
-            if(!authRequest.started) {
-				CheckUserAuthentication(authRequest);
-            }
-        }
 	}
 
 	private void ListenerThread() {
@@ -55,24 +46,25 @@ public class UnityHttpListener : MonoBehaviour {
 		if(context.Request.HttpMethod == "POST") {
 			Thread.Sleep(1000);
 			//We assume this is the session ticket
-			string sessionTicket = new StreamReader(context.Request.InputStream,
+			string clientRequestSerialized = new StreamReader(context.Request.InputStream,
 								context.Request.ContentEncoding).ReadToEnd();
-			sessionTicket = HttpUtility.UrlDecode(sessionTicket);
+			clientRequestSerialized = HttpUtility.UrlDecode(clientRequestSerialized);
+
+			ClientRequest clientRequest = JsonUtility.FromJson<ClientRequest>(clientRequestSerialized);
 
 			try {
-				//Create an auth request and add it to the queue for the main thread to handle
-				//(PlayFab calls aren't thread safe)
-				AuthRequest authRequest = new AuthRequest(sessionTicket);
-				authenticationQueue.Add(authRequest, null);
+				authenticationHandler.AddClientRequestToQueue(clientRequest);
 
-				while(authenticationQueue[authRequest] == null) {
+				while(authenticationHandler.ResponseIsNull(clientRequest)) {
 					Thread.Sleep(100);
 				}
+
+				ClientResponse clientResponse = authenticationHandler.GetClientResponse(clientRequest);
 
 				//Send Response
 				HttpListenerResponse response = context.Response;
 
-				string responseString = $"Is Authentic {authenticationQueue[authRequest].isAuthentic}";
+				string responseString = JsonUtility.ToJson(clientResponse);
 				byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 				// Get a response stream and write the response to it.
 				response.ContentLength64 = buffer.Length;
@@ -80,7 +72,7 @@ public class UnityHttpListener : MonoBehaviour {
 				System.IO.Stream output = response.OutputStream;
 				output.Write(buffer, 0, buffer.Length);
 
-				authenticationQueue.Remove(authRequest);
+				authenticationHandler.RemoveClientRequestFromQueue(clientRequest);
 			} catch(Exception e) {
 				Debug.Log(e.ToString());
 			}
@@ -88,16 +80,6 @@ public class UnityHttpListener : MonoBehaviour {
 
 		context.Response.Close();
 	}
-
-	async Task CheckUserAuthentication(AuthRequest authRequest) {
-		authRequest.started = true;
-
-		Authenticator authenticator = new Authenticator();
-
-		bool authenticated = await authenticator.CheckUserAuthentication(authRequest.authToken);
-
-		authenticationQueue[authRequest] = new AuthResponse(authenticated);
-    }
 
     private void OnDisable() {
 		if(listener.IsListening)
