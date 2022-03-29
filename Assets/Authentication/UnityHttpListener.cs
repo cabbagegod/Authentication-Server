@@ -44,37 +44,68 @@ public class UnityHttpListener : MonoBehaviour {
 		}
 
 		if(context.Request.HttpMethod == "POST") {
-			Thread.Sleep(1000);
-			//We assume this is the session ticket
-			string clientRequestSerialized = new StreamReader(context.Request.InputStream,
+			//I don't remember the purpose for this sleep, needs testing to see if it's useless
+			Thread.Sleep(100);
+			//We assume this is the request
+			string requestSerialized = new StreamReader(context.Request.InputStream,
 								context.Request.ContentEncoding).ReadToEnd();
-			clientRequestSerialized = HttpUtility.UrlDecode(clientRequestSerialized);
+			requestSerialized = HttpUtility.UrlDecode(requestSerialized);
 
-			ClientRequest clientRequest = JsonUtility.FromJson<ClientRequest>(clientRequestSerialized);
+			ClientRequest clientRequest = JsonUtility.FromJson<ClientRequest>(requestSerialized);
 
-			try {
-				authenticationHandler.AddClientRequestToQueue(clientRequest);
+			//This could definitely get cleaned up so much but async scares me so...
+			if(clientRequest.requestType == RequestType.Client) {
+				try {
+					authenticationHandler.AddClientRequestToQueue(clientRequest);
 
-				while(authenticationHandler.ResponseIsNull(clientRequest)) {
-					Thread.Sleep(100);
+					while(authenticationHandler.ResponseIsNull(clientRequest)) {
+						Thread.Sleep(100);
+					}
+
+					ClientResponse clientResponse = authenticationHandler.GetClientResponse(clientRequest);
+
+					//Send Response
+					HttpListenerResponse response = context.Response;
+
+					string responseString = JsonUtility.ToJson(clientResponse);
+					byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+					// Get a response stream and write the response to it.
+					response.ContentLength64 = buffer.Length;
+
+					System.IO.Stream output = response.OutputStream;
+					output.Write(buffer, 0, buffer.Length);
+
+					authenticationHandler.RemoveClientRequestFromQueue(clientRequest);
+				} catch(Exception e) {
+					Debug.Log(e.ToString());
 				}
+			} else {
+				try {
+					ServerRequest serverRequest = JsonUtility.FromJson<ServerRequest>(requestSerialized);
 
-				ClientResponse clientResponse = authenticationHandler.GetClientResponse(clientRequest);
+					authenticationHandler.AddServerRequestToQueue(serverRequest);
 
-				//Send Response
-				HttpListenerResponse response = context.Response;
+					while(authenticationHandler.ResponseIsNull(serverRequest)) {
+						Thread.Sleep(100);
+					}
 
-				string responseString = JsonUtility.ToJson(clientResponse);
-				byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-				// Get a response stream and write the response to it.
-				response.ContentLength64 = buffer.Length;
+					ServerResponse serverResponse = authenticationHandler.GetServerResponse(serverRequest);
 
-				System.IO.Stream output = response.OutputStream;
-				output.Write(buffer, 0, buffer.Length);
+					//Send Response
+					HttpListenerResponse response = context.Response;
 
-				authenticationHandler.RemoveClientRequestFromQueue(clientRequest);
-			} catch(Exception e) {
-				Debug.Log(e.ToString());
+					string responseString = JsonUtility.ToJson(serverResponse);
+					byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+					// Get a response stream and write the response to it.
+					response.ContentLength64 = buffer.Length;
+
+					System.IO.Stream output = response.OutputStream;
+					output.Write(buffer, 0, buffer.Length);
+
+					authenticationHandler.RemoveServerRequestFromQueue(serverRequest);
+				} catch(Exception ee) {
+					Debug.Log(ee.ToString());
+				}
 			}
 		}
 

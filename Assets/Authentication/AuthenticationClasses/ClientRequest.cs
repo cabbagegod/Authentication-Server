@@ -7,13 +7,18 @@ public class ClientRequest {
     public string connectingIp;
     //The user's playfab session ticket
     public string playfabSessionTicket;
+    //What type of request it is, used on the auth server
+    public RequestType requestType;
     //If the authentication server has begun processing the request
     private bool started = false;
 
-    public ClientRequest(string playfabSessionTicket, string connectingIp) {
+    public ClientRequest(string playfabSessionTicket, string connectingIp, RequestType requestType) {
         this.playfabSessionTicket = playfabSessionTicket;
         this.connectingIp = connectingIp;
+        this.requestType = requestType;
     }
+
+    public ClientRequest() { }
 
     public void MarkStarted() {
         started = true;

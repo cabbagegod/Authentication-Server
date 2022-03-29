@@ -10,7 +10,6 @@ public class ServerAuthenticationKey {
     //The IP address that this authentication key was created for
     public readonly string serverIp;
 
-
     public ServerAuthenticationKey(string serverIp) {
         creationTime = Time.time;
         serverAuthenticationKey = RandomStringGenerator.GenerateRandomString();
