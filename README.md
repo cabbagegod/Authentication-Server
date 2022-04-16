@@ -8,13 +8,6 @@ This is an http authentication server that I'm playing around with for my upcomi
 
 ![Authentication Server Flow](https://user-images.githubusercontent.com/62683395/155448245-1dae2e73-4038-4b24-8619-719d2da0c380.png)
 
-
-## To Do
-There is still a lot I want to do with this project. Currently it works but it wouldn't be very helpful in an actual environment. Here are some things I want to add,
-* Temp auth tokens so the user's playfab session token is never shared with an untrusted (player run) server
-* Different message objects to handle server & client requests separately
-* A proper response message for the (player run) server to handle
-
 ## Setup
 
 1) Create an account @ playfab.com and setup your studio / game title
