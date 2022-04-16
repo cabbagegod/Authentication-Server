@@ -14,7 +14,7 @@ This is an http authentication server that I'm playing around with for my upcomi
 2) Clone this repo to your local machine
 3) Follow the steps on the [Playfab Unity SDK](https://github.com/PlayFab/UnitySDK) to setup Playfab inside of your project (PlayFab does not come with this repo)
 
-Now you should be good to begin testing. Open the AuthenticationScene to get started. By default the listener will run when you press play, activating the other objects in the scene will allow you to test it.
+Now you should be good to begin testing. Open the AuthenticationScene to get started. By default the listener will run when you press play, activating the other objects in the scene will allow you to test it. All you need to do to interact with your newly made authentication server is add the [Kyoshi Studios Auth Utils](https://github.com/cabbagegod/Authentication-Server/releases) to your game project. The contained classes can then be serialized/deserialized as you need them.
 
 ## How To Test
 
