@@ -1,5 +1,6 @@
-public enum RequestType
-{
-   Server,
-   Client
+namespace KyoshiStudios.Authentication {
+    public enum RequestType {
+        Server,
+        Client
+    }
 }
