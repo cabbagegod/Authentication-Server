@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class Authenticator {
-    public bool isFinished = false;
-    public bool isAuthentic = false;
+namespace KyoshiStudios.Authentication {
+    public class Authenticator {
+        public bool isFinished = false;
+        public bool isAuthentic = false;
 
-    public async Task<bool> CheckUserAuthentication(string sessionTicket) {
-        PlayFab.ServerModels.AuthenticateSessionTicketRequest request = new PlayFab.ServerModels.AuthenticateSessionTicketRequest { SessionTicket = sessionTicket };
+        public async Task<bool> CheckUserAuthentication(string sessionTicket) {
+            PlayFab.ServerModels.AuthenticateSessionTicketRequest request = new PlayFab.ServerModels.AuthenticateSessionTicketRequest { SessionTicket = sessionTicket };
 
-        PlayFab.PlayFabServerAPI.AuthenticateSessionTicket(request, result => {
-            isAuthentic = true;
-            isFinished = true;
-        }, error => {
-            Debug.LogError(error.GenerateErrorReport());
-            isFinished = true;
-        });
+            PlayFab.PlayFabServerAPI.AuthenticateSessionTicket(request, result => {
+                isAuthentic = true;
+                isFinished = true;
+            }, error => {
+                Debug.LogError(error.GenerateErrorReport());
+                isFinished = true;
+            });
 
-        while(!isFinished) {
-            await Task.Delay(100);
+            while(!isFinished) {
+                await Task.Delay(100);
+            }
+
+            return isAuthentic;
         }
-
-        return isAuthentic;
     }
 }
